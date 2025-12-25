@@ -261,3 +261,27 @@ export async function saveSession(
         return null;
     }
 }
+
+/**
+ * Get session by ID
+ */
+export async function getSessionById(sessionId: string) {
+    try {
+        const session = await db.query.plannerSessions.findFirst({
+            where: eq(plannerSessions.id, sessionId),
+        });
+
+        if (!session) return null;
+
+        return {
+            id: session.id,
+            answers: session.answers as UserAnswer[],
+            recommendation: session.recommendation as FinalRecommendation,
+            totalBudget: session.totalBudget,
+            createdAt: session.createdAt,
+        };
+    } catch (error) {
+        console.error('Error fetching session:', error);
+        return null;
+    }
+}

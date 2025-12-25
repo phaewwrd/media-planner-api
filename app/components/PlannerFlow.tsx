@@ -15,21 +15,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { UserAnswer, StepDefinition, FinalRecommendation } from '../types';
+import { useRouter } from 'next/navigation';
+import { UserAnswer, StepDefinition } from '../types';
 import StepCard from './StepCard';
 import OptionSelector from './OptionSelector';
 import ProgressBar from './ProgressBar';
 import AnswerHistory from './AnswerHistory';
-import FinalSummary from './FinalSummary';
 
 export default function PlannerFlow() {
     // State management
     const [currentStep, setCurrentStep] = useState<StepDefinition | null>(null);
     const [answers, setAnswers] = useState<UserAnswer[]>([]);
-    const [isComplete, setIsComplete] = useState(false);
-    const [recommendation, setRecommendation] = useState<FinalRecommendation | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
 
     /**
      * Fetch initial step on mount
@@ -76,9 +75,9 @@ export default function PlannerFlow() {
             if (!res.ok) throw new Error('Failed to calculate recommendation');
             const data = await res.json();
 
-            if (data.success && data.recommendation) {
-                setRecommendation(data.recommendation);
-                setIsComplete(true);
+            if (data.success && data.sessionId) {
+                // Navigate to CSV Upload / Data Check page first
+                router.push(`/upload-csv/${data.sessionId}`);
             } else {
                 throw new Error(data.error || 'Unknown error');
             }
@@ -127,8 +126,6 @@ export default function PlannerFlow() {
      */
     const handleRestart = () => {
         setAnswers([]);
-        setIsComplete(false);
-        setRecommendation(null);
         setError(null);
         fetchStep('STEP_1');
     };
@@ -142,7 +139,7 @@ export default function PlannerFlow() {
     };
 
     // Render loading state
-    if (isLoading && !currentStep && !isComplete) {
+    if (isLoading && !currentStep) {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
@@ -163,11 +160,6 @@ export default function PlannerFlow() {
                 </button>
             </div>
         );
-    }
-
-    // Render final summary if complete
-    if (isComplete && recommendation) {
-        return <FinalSummary recommendation={recommendation} onRestart={handleRestart} />;
     }
 
     // Render current step
