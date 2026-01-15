@@ -1,11 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AllocationChart } from "./components/AllocationChart";
 import { Model, QUESTIONS } from "./lib/planner-data";
 
 type Step = "start" | "wizard" | "processing" | "result";
 type Answers = { [key: string]: string };
+
+const PROCESSING_MESSAGES = [
+  "Analyzing market trends and competitor data...",
+  "Evaluating user behavior patterns and conversion funnels...",
+  "Simulating various budget allocation scenarios...",
+  "Optimizing media mix for maximum ROI...",
+  "Generating strategic recommendations...",
+];
 
 export default function PlannerPage() {
   const [currentStep, setCurrentStep] = useState<Step>("start");
@@ -14,7 +22,40 @@ export default function PlannerPage() {
   const [clientName, setClientName] = useState("");
   const [result, setResult] = useState<{ model: Model; efficiency: number; sessionId?: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showTimeoutHint, setShowTimeoutHint] = useState(false);
+  const [processingMessage, setProcessingMessage] = useState("");
 
+
+  useEffect(() => {
+    if (currentStep !== 'wizard') {
+        return;
+    }
+
+    setShowTimeoutHint(false); 
+
+    if (answers[QUESTIONS[currentIdx].id]) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+        setShowTimeoutHint(true);
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [currentIdx, answers, currentStep]);
+
+  useEffect(() => {
+    if (currentStep === "processing") {
+      let messageIndex = 0;
+      setProcessingMessage(PROCESSING_MESSAGES[messageIndex]);
+      const interval = setInterval(() => {
+        messageIndex = (messageIndex + 1) % PROCESSING_MESSAGES.length;
+        setProcessingMessage(PROCESSING_MESSAGES[messageIndex]);
+      }, 2000); // Change message every 2 seconds
+
+      return () => clearInterval(interval);
+    }
+  }, [currentStep]);
 
   const startWizard = () => {
     if (!clientName.trim()) return;
@@ -43,20 +84,24 @@ export default function PlannerPage() {
     setCurrentStep("processing");
     setError(null);
     try {
-      const response = await fetch('/api/planner', {
+      const fetchPromise = fetch('/api/planner', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ clientName, answers }),
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error('Failed to get result from server.');
+        }
+        return res.json();
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to get result from server.');
-      }
+      const timeoutPromise = new Promise(resolve => setTimeout(resolve, 5000));
 
-      const data = await response.json();
-      setResult(data);
+      const [data] = await Promise.all([fetchPromise, timeoutPromise]);
+
+      setResult(data as any);
       setCurrentStep("result");
 
     } catch (e: any) {
@@ -107,42 +152,52 @@ export default function PlannerPage() {
         {currentStep === "start" && (
           <div className="w-full max-w-4xl text-center space-y-12 animate-slide-up">
             <div className="space-y-6">
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full">
-                <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
-                <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
-                  Conversion Intelligence Model Activated
-                </span>
-              </div>
-              <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.85] italic">
-                Precision <br />
-                <span className="text-purple-600">Allocation</span>
-              </h2>
-              <p className="text-lg text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed">
-                วิเคราะห์จัดสรรงบประมาณสื่อด้วยตรรกะระดับ Senior Planner <br />
-                เพื่อเป้าหมาย{" "}
-                <span className="text-white">Ecommerce Conversion</span> ที่วัดผลได้จริง
+              <p className="text-[20px] font-medium text-purple-600 uppercase tracking-widest mb-2">
+                AI CHATBOT ASSISTANT
               </p>
+
+              <h2 className="text-6xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.85] italic">
+                DIGITAL MARKETING <br />
+                <span className="text-purple-600">BUDGET ALLOCATION</span>
+              </h2>
+
+              <div className="border-y border-zinc-700 py-2 mt-4 inline-block px-4">
+                <p className="text-[15px] font-normal text-zinc-500 uppercase tracking-[0.2em]">
+                  FACEBOOK ADS | GOOGLE ADS | TIKTOK ADS
+                </p>
+              </div>
+            <p className="text-xl text-white max-w-xl mx-auto font-medium leading-relaxed">
+              สวัสดีครับ Junior Planner ยินดีที่ได้เป็นที่ปรึกษาให้คุณ <br />
+              เราจะเน้นไปที่ธุรกิจ <span className="text-purple-600">E-commerce</span> และ <span className="text-purple-600">Conversion</span> เป็นหลักครับ
+            </p>
             </div>
 
-            <div className="bg-[#0f0f0f] p-10 rounded-[3rem] border border-zinc-800 shadow-2xl space-y-8 max-w-xl mx-auto">
-              <div className="space-y-2 text-left">
-                <label className="text-[10px] font-black text-zinc-600 uppercase tracking-widest ml-1">
-                  Client Identification
-                </label>
+
+            {/* Restructured input section */}
+            <div className="w-full  mx-auto space-y-10 pt-8">
+              <h2 className="text-2xl md:text-5xl font-bold text-white tracking-tight leading-tight">
+                วันนี้เราจะวางแผนงบโฆษณาให้ <span className="text-purple-600">&quot;แบรนด์&quot;</span> หรือ <span className="text-purple-600">&quot;ธุรกิจ&quot;</span> ประมาณไหนดีครับ?
+              </h2>
+              
+              <div className="w-full max-w-lg mx-auto">
                 <input
                   type="text"
                   value={clientName}
                   onChange={(e) => setClientName(e.target.value)}
                   placeholder="ระบุชื่อแบรนด์หรือธุรกิจที่นี่..."
-                  className="w-full bg-transparent border-b border-zinc-800 py-4 text-center text-2xl font-bold text-white focus:border-purple-600 focus:outline-none transition-all"
+                  className="w-full bg-transparent border-b-2 border-zinc-700 py-3 text-center text-2xl font-bold text-white focus:border-purple-500 focus:outline-none transition-colors duration-300 placeholder-zinc-600"
                 />
               </div>
-              <button
-                onClick={startWizard}
-                className="w-full py-6 bg-white text-black font-black rounded-2xl hover:bg-purple-600 hover:text-white transition-all active:scale-95 shadow-xl uppercase tracking-[0.2em] text-xs"
-              >
-                Initialize Analysis
-              </button>
+
+              <div className="pt-4">
+                <button
+                  onClick={startWizard}
+                  disabled={!clientName.trim()}
+                  className="bg-zinc-900 border border-zinc-700 text-zinc-300 font-bold text-xs uppercase tracking-widest px-10 py-4 rounded-full hover:bg-purple-600 hover:text-white hover:border-purple-600 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed group"
+                >
+                  Start Planning <span className="ml-2 opacity-50 group-hover:opacity-100 transition-opacity">›</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -156,9 +211,15 @@ export default function PlannerPage() {
                   {currentQuestion.topic}
                 </span>
               </div>
+              <div className="flex flex-col gap-4">
+                <div className="text-xl">{currentQuestion?.smallword}</div>
+
               <h3 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight italic">
                 &quot;{currentQuestion.desc}&quot;
               </h3>
+              <p>{currentQuestion?.desc_subtitle}</p>
+              <p>{currentQuestion?.desc_subtitle_2}</p>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 mb-10">
@@ -178,6 +239,15 @@ export default function PlannerPage() {
                 </div>
               ))}
             </div>
+
+            {showTimeoutHint && !selectedValue && (
+              <div className="mb-12 p-8 bg-zinc-900/50 border border-yellow-500/20 rounded-[2.5rem] flex gap-6 items-center animate-slide-up shadow-inner">
+                <div className="w-12 h-12 bg-yellow-600 text-white rounded-2xl flex items-center justify-center shrink-0 text-xl shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+                  🤔
+                </div>
+                <p className="text-sm text-yellow-100 font-medium italic leading-relaxed">{currentQuestion.hint}</p>
+              </div>
+            )}
 
             {selectedValue && currentQuestion.feedback && (
               <div className="mb-12 p-8 bg-zinc-900/50 border border-purple-500/20 rounded-[2.5rem] flex gap-6 items-center animate-slide-up shadow-inner">
@@ -211,18 +281,22 @@ export default function PlannerPage() {
 
         {currentStep === "processing" && (
           <div className="w-full max-w-lg text-center space-y-12 animate-slide-up">
-            <div className="flex justify-center">
+            <div className="flex justify-center relative w-max mx-auto">
               <div
-                className="w-36 h-36 bg-zinc-900 border border-zinc-800 rounded-[3.5rem] flex items-center justify-center shadow-2xl relative overflow-hidden">
+                className="w-36 h-36 bg-zinc-900 border border-zinc-800 rounded-[3.5rem] flex items-center justify-center shadow-2xl relative overflow-hidden animate-spin-slow">
                 <div className="absolute inset-0 bg-purple-600/10 animate-pulse"></div>
-                <span className="text-5xl relative z-10">🧠</span>
+                <span className="text-5xl relative z-10">&#x1F9E0;</span>
+              </div>
+              <div className="absolute -top-2 right-12 w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center shadow-md border border-zinc-800 text-white text-lg z-20">
+                ⚡
               </div>
             </div>
             <div className="space-y-4">
-              <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">Compiling Data</h2>
-              <p className="text-xs font-black text-zinc-600 uppercase tracking-[0.3em]">
-                Implementing Senior Logic v2.0 for {clientName}
-              </p>
+              <h2 className="text-4xl font-black text-white uppercase tracking-tighter italic">STRATEGIC AUDIT</h2>
+              <p className="text-lg text-zinc-400 font-medium">{processingMessage}</p>
+              <h4 className="text-xs font-black text-zinc-600 uppercase tracking-[0.3em]">
+                CONSTRUCTING MIX FOR {clientName}
+              </h4>
             </div>
             <div className="max-w-xs mx-auto w-full h-1 bg-zinc-900 rounded-full overflow-hidden">
               <div className="h-full bg-purple-600 w-full transition-all duration-[3s]"></div>

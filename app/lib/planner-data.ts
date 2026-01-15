@@ -1,10 +1,14 @@
 export type Question = {
   id: string;
   topic: string;
+  smallword?: string;
   desc: string;
-  hint: string;
+  desc_subtitle?: string;
+  desc_subtitle_2?: string;
+  hint?: string;
   options: {
     label: string;
+    label_subtitle?: string;
     val: string;
     sub?: string;
     points?: { fb: number; gg: number };
@@ -25,7 +29,7 @@ export type Model = {
 
 export const QUESTIONS: Question[] = [
   {
-    id: 'q1', topic: "Strategic Context", desc: "โดยทั่วไป ลูกค้าซื้อสินค้าหรือบริการนี้แบบไหนมากกว่าครับ?", hint: "Planner Hint: สะท้อนพฤติกรรมการตัดสินใจจริง ไม่ใช่แค่ราคา",
+    id: 'q1', topic: "Strategic Context", smallword: "ก่อนอื่น ขอเข้าใจพฤติกรรมการตัดสินใจซื้อของลูกค้าก่อนนะครับ",desc: "โดยทั่วไป ลูกค้าซื้อสินค้าหรือบริการนี้แบบไหนมากกว่าครับ?",desc_subtitle: "", hint: "ถ้าก้ำกึ่ง ให้เลือกตาม 'รอบตัดสินใจ' มากกว่าราคา เพราะบางบริการราคาไม่สูงแต่ friction สูง (เช่น ต้องนัด / ต้องโทรปรึกษา)",
     options: [
       { label: 'ตัดสินใจเร็ว / เห็นแล้วซื้อเลย', val: 'Low', sub: 'Low involvement / FB +3 Points', points: { fb: 3, gg: 0 } },
       { label: 'ต้องคิด / เทียบ / อ่านรีวิวก่อน', val: 'High', sub: 'High involvement / GG +3 Points', points: { fb: 0, gg: 3 } }
@@ -33,14 +37,14 @@ export const QUESTIONS: Question[] = [
     feedback: "ข้อนี้จะกำหนดบทบาทของช่องทาง ไม่ได้เปลี่ยนเป้าหมาย Conversion ครับ"
   },
   {
-    id: 'q2', topic: "Strategic Context", desc: "ปัจจุบัน ลูกค้ามีการค้นหาสินค้าหรือบริการนี้บน Google อยู่แล้วไหมครับ?", hint: "Search Volume Presence",
+    id: 'q2', topic: "Strategic Context", desc: "ปัจจุบัน ลูกค้ามีการค้นหาสินค้าหรือบริการนี้บน Google อยู่แล้วไหมครับ?",desc_subtitle: "เช่น ลูกค้าค้นหา ชื่อแบรนด์ / ชื่อบริการ / คำว่า ‘ใกล้ฉัน’ บ่อยไหมครับ”",
     options: [
       { label: 'มีการค้นหาชัดเจน', val: 'Yes', sub: 'Existing Demand / GG +2 Points', points: { fb: 0, gg: 2 } },
       { label: 'แทบไม่มี / สินค้าใหม่ ต้องสร้างการรับรู้ก่อน', val: 'No', sub: 'Need Awareness / FB +2 Points', points: { fb: 2, gg: 0 } }
     ]
   },
   {
-    id: 'q3', topic: "Strategic Context", desc: "ลูกค้าของคุณมีแนวโน้ม “ซื้อซ้ำ” มากแค่ไหนครับ?", hint: "LTV / Retention Structure",
+    id: 'q3', topic: "Strategic Context", desc: "ลูกค้าของคุณมีแนวโน้ม “ซื้อซ้ำ” มากแค่ไหนครับ?", 
     options: [
       { label: 'ซื้อครั้งเดียว หรือซื้อนาน ๆ ครั้ง (One-off)', val: 'No', sub: 'One-off Model / GG +1 Point', points: { fb: 0, gg: 1 } },
       { label: 'ใช้แล้วต้องซื้อซ้ำเป็นรอบ (Repeat)', val: 'Yes', sub: 'Repeat Purchase / FB +1 Point', points: { fb: 1, gg: 0 } }
@@ -48,32 +52,32 @@ export const QUESTIONS: Question[] = [
     feedback: "ข้อนี้ใช้ประเมินโครงสร้างรายได้ระยะยาว และจะช่วยปรับน้ำหนักช่องทางให้เหมาะกับการเติบโตของธุรกิจ, ข้อนี้สะท้อนโครงรายได้ ไม่ได้เปลี่ยนเป้าหมาย Conversion"
   },
   {
-    id: 'q4', topic: "Operational Flow", desc: "โดยปกติ ลูกค้าซื้อสินค้าของคุณผ่านช่องทางไหนเป็นหลักครับ?", hint: "Friction Check (TikTok Blocker if B)",
+    id: 'q4', topic: "Operational Flow", desc: "โดยปกติ ลูกค้าซื้อสินค้าของคุณผ่านช่องทางไหนเป็นหลักครับ?", 
     options: [
       { label: 'ซื้อออนไลน์ได้ทันที จบภายในแชทเดียว (Website / Marketplace / Social commerce)', val: 'Low', sub: 'Low Friction / FB +1 Point', points: { fb: 1, gg: 0 } },
       { label: 'ต้องให้ทีม Follow-up / โทร / เสนอราคา', val: 'High', sub: 'High Friction / GG +1 Point', points: { fb: 0, gg: 1 } }
     ]
   },
   {
-    id: 'q5', topic: "Operational Flow", desc: "ตอนนี้ระบบวัดผลโฆษณา (Pixel / Conversion) พร้อมแค่ไหนครับ?", hint: "Data Health (TikTok Blocker if B)",
+    id: 'q5', topic: "Operational Flow", desc: "ตอนนี้ระบบวัดผลโฆษณา (Pixel / Conversion) พร้อมแค่ไหนครับ?",
     options: [
       { label: 'ติดตั้งครบ วัดผลได้ถึงจุดปิดการขาย', val: 'Strong', sub: 'Full Funnel / GG +1 Point', points: { fb: 0, gg: 1 } },
       { label: 'ยังไม่ครบ / วัดได้แค่คลิกหรือแชท วัดได้แค่คลิก/แชท ยังวัดถึงยอดขายไม่ได้', val: 'Weak', sub: 'Partial Tracking / FB +1 Point', points: { fb: 1, gg: 0 } }
     ],
     feedback: "กรณีนี้ระบบจะเน้นช่องทางที่ควบคุมต้นทุนได้มากที่สุด และจะยังไม่เปิด Test channel"
   },
-  { id: 'q6', topic: "Content & Resources", desc: "ตอนนี้มี 'วิดีโอแนวตั้ง' ที่พร้อมใช้ยิงโฆษณาไหมครับ?", hint: "Creative Block (TikTok Blocker if B)", options: [{ label: 'มีวิดีโอที่เหมาะกับโซเชียล', val: 'Yes', sub: '' }, { label: 'ยังไม่มี asset พร้อมใช้', val: 'No', sub: '' }] },
+  { id: 'q6', topic: "Content & Resources", desc: "ตอนนี้มี 'วิดีโอแนวตั้ง' ที่พร้อมใช้ยิงโฆษณาไหมครับ?", desc_subtitle: "คำถามนี้เพื่อดูว่าเราควรมี ‘ช่องทางทดสอบ’ เพิ่มหรือไม่ครับ", options: [{ label: 'มีวิดีโอที่เหมาะกับโซเชียล', val: 'Yes', sub: '' }, { label: 'ยังไม่มี asset พร้อมใช้', val: 'No', sub: '' }] },
   { id: 'q7', topic: "Content & Resources", desc: "งบโฆษณาที่วางไว้ต่อเดือนประมาณเท่าไหร่ครับ?", hint: "Budget Block (TikTok Blocker if < 70k)", options: [{ label: '70,000 บาทขึ้นไป', val: 'High', sub: '' }, { label: 'ต่ำกว่า 70,000 บาท', val: 'Low', sub: '' }] },
   { id: 'q8', topic: "Audience & Strategy", desc: "กลุ่มลูกค้าเป้าหมายหลักคือช่วงอายุไหนครับ?", hint: "Age Blocker (TikTok Blocker if 45+)", options: [{ label: '18–24 (Gen Z)', val: '18-24', sub: '' }, { label: '25–34', val: '25-34', sub: '' }, { label: '35–44', val: '35-44', sub: '' }, { label: '45+', val: '45+', sub: '' }] },
   {
-    id: 'q9', topic: "Audience & Strategy", desc: "เป้าหมายหลักของแคมเปญนี้คือแบบไหนครับ?", hint: "Volume vs Quality",
+    id: 'q9', topic: "Audience & Strategy", desc: "เป้าหมายหลักของแคมเปญนี้คือแบบไหนครับ?", desc_subtitle: "เลือกสิ่งที่สำคัญที่สุดตอนนี้", hint: "ถ้าต้องเลือก 1 อย่างเพื่อเป็นหลักก่อน 2–4 สัปดาห์แรก จะเลือกอะไรครับ คำถามนี้จะไม่เปลี่ยนช่องทางหลัก แต่ใช้ปรับสัดส่วนเล็กน้อย",
     options: [
       { label: 'อยากได้จำนวน Lead / Order ให้มากที่สุด (CPL ต่ำ)', val: 'Volume', points: { fb: 1, gg: 0 } },
       { label: 'อยากได้ลูกค้า/Lead ที่คุณภาพสูง มีโอกาสปิดจริง เช่น ROAS สูงขึ้น / order มาร์จิ้นดี / cancel rate ต่ำ', val: 'Quality', points: { fb: 0, gg: 1 } }
     ],
     feedback: "ข้อนี้กำหนดบทบาทของโฆษณาใน funnel ไม่ใช่ตัววัดความคุ้มค่าของ Conversion"
   },
-  { id: 'q10', topic: "Audience & Strategy", desc: "ที่ผ่านมาเคยยิงโฆษณาแล้วมีช่องทางที่เห็นผลชัดเจนไหมครับ?", hint: "Proof of Concept Context", options: [{ label: 'มีข้อมูลย้อนหลัง 3–6 เดือน และ winner channel คือ Facebook', val: 'FACEBOOK', sub: '' }, { label: 'มีข้อมูลย้อนหลัง 3–6 เดือน และ winner channel คือ Google', val: 'GOOGLE', sub: '' }, { label: 'ยังไม่มี / เพิ่งเริ่มต้นใหม่', val: 'New', sub: '' }] }
+  { id: 'q10', topic: "Audience & Strategy", desc: "ที่ผ่านมาเคยยิงโฆษณาแล้วมีช่องทางที่เห็นผลชัดเจนไหมครับ?", desc_subtitle: "ชนะด้วย KPI อะไร” (CPL / Lead quality / ROAS)", desc_subtitle_2 : "ระบบจะให้น้ำหนักจากข้อมูลเดิม แต่จะไม่ฝืนเงื่อนไขปัจจุบัน", hint: "Proof of Concept Context", options: [{ label: 'มีข้อมูลย้อนหลัง 3–6 เดือน และ winner channel คือ Facebook', val: 'FACEBOOK', sub: '' }, { label: 'มีข้อมูลย้อนหลัง 3–6 เดือน และ winner channel คือ Google', val: 'GOOGLE', sub: '' }, { label: 'ยังไม่มี / เพิ่งเริ่มต้นใหม่', val: 'New', sub: '' }] }
 ];
 
 export const MODELS: { [key: string]: Model } = {
