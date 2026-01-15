@@ -63,8 +63,8 @@ export default function QuestionInput({ onSubmit, isLoading }: QuestionInputProp
         <div className="sticky top-4 z-10 mb-8">
             <form onSubmit={handleSubmit} className="relative">
                 {/* Input Container with gradient border effect */}
-                <div className="relative bg-gradient-to-r from-purple-600/30 via-blue-600/30 to-cyan-600/30 p-[2px] rounded-2xl">
-                    <div className="bg-[#1a0f2e] rounded-2xl">
+                <div className="relative bg-gradient-to-r from-primary/30 via-secondary/30 to-accent/30 p-[2px] rounded-2xl">
+                    <div className="bg-surface rounded-2xl">
                         <textarea
                             ref={textareaRef}
                             value={question}
@@ -73,7 +73,7 @@ export default function QuestionInput({ onSubmit, isLoading }: QuestionInputProp
                             disabled={isLoading}
                             placeholder="ถามคำถามเกี่ยวกับ Media Planning, Campaign Strategy, KPI, Performance...&#10;&#10;ตัวอย่าง: 'วิธีวาง Media Plan สำหรับแคมเปญ Launch สินค้าใหม่' หรือ 'ROAS คืออะไร และควรคำนวณอย่างไร'"
                             rows={3}
-                            className="w-full px-6 py-4 bg-transparent text-purple-50 placeholder-purple-400/40 resize-none outline-none text-base md:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-full px-6 py-4 bg-transparent text-foreground placeholder-foreground/40 resize-none outline-none text-base md:text-lg disabled:opacity-50 disabled:cursor-not-allowed"
                             style={{ minHeight: '120px', maxHeight: '300px' }}
                         />
 
@@ -82,7 +82,7 @@ export default function QuestionInput({ onSubmit, isLoading }: QuestionInputProp
                             <button
                                 type="submit"
                                 disabled={!question.trim() || isLoading}
-                                className="group relative px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-xl hover:from-purple-500 hover:to-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
+                                className="group relative px-8 py-3 bg-gradient-to-r from-primary to-secondary text-accent font-semibold rounded-xl hover:from-primary/90 hover:to-secondary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 disabled:hover:scale-100"
                             >
                                 <span className="flex items-center space-x-2">
                                     {isLoading ? (
@@ -108,7 +108,7 @@ export default function QuestionInput({ onSubmit, isLoading }: QuestionInputProp
                 </div>
 
                 {/* Hint text */}
-                <p className="text-xs text-purple-400/50 mt-2 text-center">
+                <p className="text-xs text-foreground/50 mt-2 text-center">
                     กด Enter เพื่อส่งคำถาม หรือ Shift + Enter เพื่อขึ้นบรรทัดใหม่
                 </p>
             </form>

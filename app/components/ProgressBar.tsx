@@ -19,10 +19,10 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
         <div className="w-full mb-8">
             {/* Step counter */}
             <div className="flex justify-between items-center mb-2">
-                <span className="text-sm font-medium text-purple-300">
+                <span className="text-sm font-medium text-accent">
                     STEP {current} of {total}
                 </span>
-                <span className="text-sm font-medium text-purple-300">
+                <span className="text-sm font-medium text-accent">
                     {percentage}% Complete
                 </span>
             </div>
@@ -30,7 +30,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
             {/* Progress bar */}
             <div className="w-full h-2 bg-surface-light rounded-full overflow-hidden">
                 <div
-                    className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-500 ease-out"
+                    className="h-full bg-gradient-to-r from-primary via-secondary to-accent transition-all duration-500 ease-out"
                     style={{ width: `${percentage}%` }}
                 />
             </div>
@@ -41,8 +41,8 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
                     <div
                         key={step}
                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${step <= current
-                                ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white'
-                                : 'bg-surface-light text-purple-300/40'
+                                ? 'bg-gradient-to-r from-primary to-secondary text-foreground'
+                                : 'bg-surface-light text-accent/40'
                             }`}
                     >
                         {step}

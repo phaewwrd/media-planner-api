@@ -72,16 +72,49 @@ export const users = pgTable('users', {
     updatedAt: timestamp('updated_at').defaultNow(),
 });
 
+// ============================================================================
+// ref_questions - Questions from reference.tsx
+// ============================================================================
+export const refQuestions = pgTable('ref_questions', {
+    id: varchar('id', { length: 10 }).primaryKey(), // 'q1', 'q2', etc.
+    phase: text('phase').notNull(),
+    title: text('title').notNull(),
+    desc: text('desc').notNull(),
+    hint: text('hint').notNull(),
+    options: jsonb('options').notNull(),
+});
+
+// ============================================================================
+// ref_models - Models from reference.tsx
+// ============================================================================
+export const refModels = pgTable('ref_models', {
+    id: varchar('id', { length: 10 }).primaryKey(), // 'C1', 'C2', etc.
+    name: text('name').notNull(),
+    desc: text('desc').notNull(),
+    fb: integer('fb').notNull(),
+    gg: integer('gg').notNull(),
+    tt: integer('tt').notNull(),
+    insights: text('insights').notNull(),
+    script: text('script').notNull(),
+    recs: jsonb('recs').notNull(),
+});
+
+
 // Export types
 export type PlannerStep = typeof plannerSteps.$inferSelect;
 export type PlannerOption = typeof plannerOptions.$inferSelect;
 export type PlannerRule = typeof plannerRules.$inferSelect;
 export type PlannerSession = typeof plannerSessions.$inferSelect;
+export type RefQuestion = typeof refQuestions.$inferSelect;
+export type RefModel = typeof refModels.$inferSelect;
+
 
 export type NewPlannerStep = typeof plannerSteps.$inferInsert;
 export type NewPlannerOption = typeof plannerOptions.$inferInsert;
 export type NewPlannerRule = typeof plannerRules.$inferInsert;
 export type NewPlannerSession = typeof plannerSessions.$inferInsert;
+export type NewRefQuestion = typeof refQuestions.$inferInsert;
+export type NewRefModel = typeof refModels.$inferInsert;
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -101,4 +134,3 @@ export const plannerOptionsRelations = relations(plannerOptions, ({ one }) => ({
         references: [plannerSteps.id],
     }),
 }));
-

@@ -22,13 +22,13 @@ export default function CsvDataCollector({ sessionId, recommendation }: CsvDataC
         <div className="max-w-4xl mx-auto animate-slide-up">
             {/* Header */}
             <div className="text-center mb-12">
-                <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-purple-200 via-blue-200 to-cyan-200 bg-clip-text text-transparent">
+                <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-accent via-secondary to-primary bg-clip-text text-transparent">
                     Historic Data Input
                 </h2>
-                <p className="text-lg text-purple-200/80 max-w-2xl mx-auto">
+                <p className="text-lg text-accent/80 max-w-2xl mx-auto">
                     เพื่อให้แผนมีความแม่นยำยิ่งขึ้น:
                 </p>
-                <h3 className="text-2xl font-bold text-white mt-4">
+                <h3 className="text-2xl font-bold text-foreground mt-4">
                     "คุณมีข้อมูลการทำแคมเปญในอดีต (Historic Data) หรือไม่?"
                 </h3>
             </div>
@@ -48,7 +48,7 @@ export default function CsvDataCollector({ sessionId, recommendation }: CsvDataC
 
                     <button
                         onClick={handleSkip}
-                        className="group relative px-8 py-5 bg-gradient-to-br from-gray-500/20 to-slate-500/20 hover:from-gray-500/30 hover:to-slate-500/30 border border-white/20 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                        className="group relative px-8 py-5 bg-gradient-to-br from-gray-500/20 to-slate-500/20 hover:from-gray-500/30 hover:to-slate-500/30 border border-foreground/20 rounded-2xl transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                     >
                         <div className="flex flex-col items-center gap-2">
                             <span className="text-3xl">➡️</span>
@@ -61,18 +61,18 @@ export default function CsvDataCollector({ sessionId, recommendation }: CsvDataC
                 <div className="animate-fade-in">
                     <button
                         onClick={() => setHasHistoricData(null)}
-                        className="mb-4 text-sm text-purple-300 hover:text-white flex items-center gap-2"
+                        className="mb-4 text-sm text-accent hover:text-foreground flex items-center gap-2"
                     >
                         ← ย้อนกลับ
                     </button>
 
                     <CsvMappingSection recommendation={recommendation} />
 
-                    <div className="mt-8 text-center border-t border-white/10 pt-8">
-                        <p className="text-purple-200/60 mb-4">เมื่อตรวจสอบข้อมูลเสร็จแล้ว กดปุ่มด้านล่างเพื่อดูแผนสรุป</p>
+                    <div className="mt-8 text-center border-t border-foreground/10 pt-8">
+                        <p className="text-accent/60 mb-4">เมื่อตรวจสอบข้อมูลเสร็จแล้ว กดปุ่มด้านล่างเพื่อดูแผนสรุป</p>
                         <button
                             onClick={handleSkip}
-                            className="px-8 py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-bold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/30 hover:-translate-y-1"
+                            className="px-8 py-4 bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-foreground font-bold rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-1"
                         >
                             🚀 ดูแผนสรุป (Go to Summary)
                         </button>

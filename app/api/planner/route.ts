@@ -1,106 +1,64 @@
-/**
- * Planner API Route
- * 
- * GET  /api/planner?stepId=STEP_1  → Get step definition
- * POST /api/planner                → Calculate recommendation
- */
+import { db } from '@/app/db';
+import { plannerSessions } from '@/app/db/schema';
+import { QUESTIONS, MODELS } from '@/app/lib/planner-data';
+import { NextResponse } from 'next/server';
 
-import { NextRequest, NextResponse } from 'next/server';
-import {
-    getStepById,
-    calculateRecommendation,
-    saveSession
-} from '@/app/db/planner.service';
-import type { UserAnswer } from '@/app/types';
+export async function POST(request: Request) {
+  try {
+    const { clientName, answers } = await request.json();
 
-// ============================================================================
-// GET /api/planner?stepId=STEP_1
-// ============================================================================
-export async function GET(request: NextRequest) {
-    try {
-        const { searchParams } = new URL(request.url);
-        const stepId = searchParams.get('stepId');
-
-        if (!stepId) {
-            return NextResponse.json(
-                { error: 'Missing stepId parameter' },
-                { status: 400 }
-            );
-        }
-
-        const step = await getStepById(stepId);
-
-        if (!step) {
-            return NextResponse.json(
-                { error: `Step not found: ${stepId}` },
-                { status: 404 }
-            );
-        }
-
-        return NextResponse.json({
-            step,
-            success: true
-        });
-
-    } catch (error) {
-        console.error('Error in GET /api/planner:', error);
-        return NextResponse.json(
-            {
-                error: 'Internal server error',
-                details: error instanceof Error ? error.message : 'Unknown error'
-            },
-            { status: 500 }
-        );
+    if (!clientName || !answers) {
+      return NextResponse.json({ error: 'Client name and answers are required' }, { status: 400 });
     }
-}
 
-// ============================================================================
-// POST /api/planner
-// ============================================================================
-export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { answers } = body;
+    // --- Calculation Logic (moved from frontend) ---
+    let fbPoints = 0, ggPoints = 0;
+    QUESTIONS.forEach(q => {
+      const ans = answers[q.id];
+      const opt = q.options?.find(o => o.val === ans);
+      if (opt?.points) {
+        fbPoints += opt.points.fb || 0;
+        ggPoints += opt.points.gg || 0;
+      }
+    });
 
-        if (!answers || !Array.isArray(answers) || answers.length === 0) {
-            return NextResponse.json(
-                { error: 'Missing or invalid answers array' },
-                { status: 400 }
-            );
-        }
+    const blockerMet = answers.q4 === 'High' || answers.q5 === 'Weak' || answers.q6 === 'No' || answers.q7 === 'Low' || answers.q8 === '45+';
+    const canTT = !blockerMet;
+    const hero = fbPoints >= ggPoints ? 'FACEBOOK' : 'GOOGLE';
+    const heroPoints = hero === 'FACEBOOK' ? fbPoints : ggPoints;
+    const efficiency = Math.round((heroPoints / 9) * 100);
+    const str = efficiency <= 40 ? "MOD" : efficiency <= 70 ? "STR" : "MAX";
 
-        const isValidAnswers = answers.every((answer: any) =>
-            answer.stepId &&
-            answer.selectedOptionId &&
-            answer.selectedLabel
-        );
-
-        if (!isValidAnswers) {
-            return NextResponse.json(
-                { error: 'Invalid answer format. Each answer must have stepId, selectedOptionId, and selectedLabel' },
-                { status: 400 }
-            );
-        }
-
-        console.log(`📝 Processing ${answers.length} answers...`);
-
-        const recommendation = await calculateRecommendation(answers as UserAnswer[]);
-        const sessionId = await saveSession(answers as UserAnswer[], recommendation);
-
-        return NextResponse.json({
-            recommendation,
-            sessionId,
-            success: true
-        });
-
-    } catch (error) {
-        console.error('Error in POST /api/planner:', error);
-        return NextResponse.json(
-            {
-                error: 'Failed to calculate recommendation',
-                details: error instanceof Error ? error.message : 'Unknown error'
-            },
-            { status: 500 }
-        );
+    let classId = hero === 'FACEBOOK' ? (canTT ? "C1" : (str === "MOD" ? "C2" : (str === "STR" ? "C3" : "C4"))) : (canTT ? "C5" : (str === "MOD" ? "C6" : (str === "STR" ? "C7" : "C8")));
+    
+    if (answers.q10 === 'FACEBOOK') {
+      classId = 'C4';
+    } else if (answers.q10 === 'GOOGLE') {
+      classId = 'C8';
     }
+
+    const model = MODELS[classId];
+    const result = { model, efficiency };
+    // --- End of Calculation Logic ---
+
+    // --- Save to Database ---
+    const newSession = await db.insert(plannerSessions).values({
+      // `id` and `createdAt` are auto-generated
+      answers: answers,
+      recommendation: {
+        clientName: clientName,
+        ...result
+      },
+      // userId and totalBudget are nullable, so they can be omitted
+    }).returning({ id: plannerSessions.id });
+
+    const sessionId = newSession[0].id;
+
+    // --- Return Result ---
+    return NextResponse.json({ ...result, sessionId });
+
+  } catch (error) {
+    console.error('Error in planner API:', error);
+    return NextResponse.json({ error: 'An internal server error occurred' }, { status: 500 });
+  }
 }

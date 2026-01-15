@@ -142,7 +142,7 @@ export default function PlannerFlow() {
     if (isLoading && !currentStep) {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -154,7 +154,7 @@ export default function PlannerFlow() {
                 <p className="text-red-400 mb-4">{error}</p>
                 <button
                     onClick={handleRestart}
-                    className="px-4 py-2 bg-purple-600 hover:bg-purple-500 rounded-lg text-white transaction-colors"
+                    className="px-4 py-2 bg-primary hover:bg-primary/90 rounded-lg text-foreground transaction-colors"
                 >
                     Try Again
                 </button>
@@ -194,7 +194,7 @@ export default function PlannerFlow() {
 
             {/* Helper text */}
             <div className="mt-8 text-center">
-                <p className="text-sm text-purple-300/60">
+                <p className="text-sm text-accent/60">
                     💡 เลือกคำตอบที่เหมาะสมที่สุดกับสถานการณ์ของคุณ คำตอบที่เลือกแล้วจะถูกล็อก
                 </p>
             </div>

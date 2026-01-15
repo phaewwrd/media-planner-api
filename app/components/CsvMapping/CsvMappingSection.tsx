@@ -79,10 +79,10 @@ export default function CsvMappingSection({ recommendation }: CsvMappingSectionP
 
     return (
         <div className="mt-12 pt-8 border-t border-white/10">
-            <h3 className="text-2xl font-bold bg-gradient-to-r from-purple-200 to-white bg-clip-text text-transparent mb-2">
+            <h3 className="text-2xl font-bold bg-gradient-to-r from-accent to-white bg-clip-text text-transparent mb-2">
                 📂 Apply Plan to Real Data
             </h3>
-            <p className="text-gray-400 mb-6">
+            <p className="text-foreground/80 mb-6">
                 Upload CSV report from your ad platform to get AI-powered insights mapped to your plan.
             </p>
 
@@ -104,17 +104,17 @@ export default function CsvMappingSection({ recommendation }: CsvMappingSectionP
                             relative group overflow-hidden rounded-xl p-6 transition-all duration-300
                             ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:-translate-y-1 hover:shadow-lg'}
                             ${selectedPlatform === p.id
-                                ? `bg-gradient-to-br ${p.color} ring-2 ring-white/50`
-                                : 'bg-white/5 border border-white/10 hover:border-purple-500/30'}
+                                ? `bg-gradient-to-br ${p.color} ring-2 ring-foreground/50`
+                                : 'bg-foreground/5 border border-foreground/10 hover:border-primary/30'}
                         `}
                     >
                         <div className="flex items-center gap-3">
                             <span className="text-2xl">{p.id === 'facebook' ? '∞' : p.icon}</span>
-                            <span className="font-semibold text-white">{p.name}</span>
+                            <span className="font-semibold text-foreground">{p.name}</span>
                         </div>
                         {selectedPlatform === p.id && isLoading && (
                             <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-white/30 border-t-white"></div>
+                                <div className="animate-spin rounded-full h-6 w-6 border-2 border-foreground/30 border-t-foreground"></div>
                             </div>
                         )}
                     </button>
@@ -133,42 +133,42 @@ export default function CsvMappingSection({ recommendation }: CsvMappingSectionP
             {/* AI Analysis Result */}
             {mappingResult && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-2xl border border-white/10 p-6">
+                    <div className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl border border-foreground/10 p-6">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-black font-bold text-xs">
+                            <div className="h-8 w-8 rounded-full bg-green-500 flex items-center justify-center text-background font-bold text-xs">
                                 AI
                             </div>
-                            <h4 className="text-xl font-semibold text-white">AI Planning Insight</h4>
+                            <h4 className="text-xl font-semibold text-foreground">AI Planning Insight</h4>
                         </div>
 
                         {/* Insights List */}
                         <div className="space-y-3 mb-8">
                             {mappingResult.insight.map((insight, idx) => (
-                                <div key={idx} className="flex gap-3 text-gray-300 bg-white/5 p-4 rounded-xl">
-                                    <span className="mt-1 block h-2 w-2 rounded-full bg-purple-400 shrink-0"></span>
+                                <div key={idx} className="flex gap-3 text-foreground bg-foreground/5 p-4 rounded-xl">
+                                    <span className="mt-1 block h-2 w-2 rounded-full bg-primary shrink-0"></span>
                                     {/* Parse basic markdown like **bold** */}
                                     <span dangerouslySetInnerHTML={{
-                                        __html: insight.replace(/\*\*(.*?)\*\*/g, '<strong class="text-white">$1</strong>')
+                                        __html: insight.replace(/\*\*(.*?)\*\*/g, '<strong class="text-accent">$1</strong>')
                                     }} />
                                 </div>
                             ))}
                         </div>
 
                         {/* Mapping Table */}
-                        <div className="overflow-hidden rounded-xl border border-white/10">
+                        <div className="overflow-hidden rounded-xl border border-foreground/10">
                             <table className="w-full text-sm text-left">
-                                <thead className="bg-white/5 text-gray-400">
+                                <thead className="bg-foreground/5 text-foreground/80">
                                     <tr>
                                         <th className="p-4 font-medium">Standard Field</th>
                                         <th className="p-4 font-medium">CSV Column</th>
                                         <th className="p-4 font-medium text-right">Confident</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-white/5">
+                                <tbody className="divide-y divide-foreground/5">
                                     {Object.entries(mappingResult.mapping).map(([std, csv]) => (
-                                        <tr key={std} className="hover:bg-white/5 transition-colors">
-                                            <td className="p-4 text-purple-300 font-mono">{std}</td>
-                                            <td className="p-4 text-white">{csv}</td>
+                                        <tr key={std} className="hover:bg-foreground/5 transition-colors">
+                                            <td className="p-4 text-accent font-mono">{std}</td>
+                                            <td className="p-4 text-foreground">{csv}</td>
                                             <td className="p-4 text-right">
                                                 <span className={`
                                                     px-2 py-1 rounded text-xs font-medium

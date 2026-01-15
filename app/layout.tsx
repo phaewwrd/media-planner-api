@@ -1,23 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Prompt } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const prompt = Prompt({
+  weight: ["300", "400", "600", "800"],
+  subsets: ["latin", "thai"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "AI Q&A Assistant | Digital Planner Helper",
-  description: "AI-powered Q&A Assistant for Junior Digital Planners - Get help with Media Planning, Campaign Strategy, KPI/Funnel Analysis, and Performance Marketing",
+  title: "Media Planner Assistant - Midnight Enterprise v2",
+  description: "วิเคราะห์จัดสรรงบประมาณสื่อด้วยตรรกะระดับ Senior Planner เพื่อเป้าหมาย Ecommerce Conversion ที่วัดผลได้จริง",
 };
-
-import NavBar from "./components/NavBar";
 
 export default function RootLayout({
   children,
@@ -25,14 +19,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <NavBar />
-        <main className="pt-20">
-          {children}
-        </main>
+    <html lang="th">
+      <body className={`${prompt.className} antialiased`}>
+        <main>{children}</main>
       </body>
     </html>
   );

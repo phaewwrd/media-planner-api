@@ -10,13 +10,13 @@ export default function LoadingState() {
         <div className="flex items-center justify-center space-x-3 py-8 animate-fade-in">
             {/* Animated dots */}
             <div className="flex space-x-2">
-                <div className="w-3 h-3 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                <div className="w-3 h-3 bg-blue-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                <div className="w-3 h-3 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                <div className="w-3 h-3 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                <div className="w-3 h-3 bg-secondary rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                <div className="w-3 h-3 bg-accent rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
             </div>
 
             {/* Loading text */}
-            <p className="text-purple-300/80 text-lg font-medium">
+            <p className="text-accent/80 text-lg font-medium">
                 AI กำลังคิด...
             </p>
         </div>

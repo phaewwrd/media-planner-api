@@ -81,15 +81,15 @@ export default function ChatUI() {
     };
 
     return (
-        <div className="min-h-screen w-full">
-            {/* Gradient Background */}
-            <div className="fixed inset-0 bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 -z-10">
-                {/* Animated gradient overlay */}
-                <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-purple-700/20 via-transparent to-transparent animate-pulse"></div>
+        <div className="min-h-screen w-full bg-background relative">
+            {/* Animated radial gradient background */}
+            <div className="fixed inset-0 z-0 opacity-30">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-transparent animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-tl from-accent/10 via-transparent to-transparent animate-pulse-slow" />
             </div>
 
             {/* Main Container */}
-            <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl">
+            <div className="container mx-auto px-4 py-8 md:py-12 max-w-4xl relative z-10">
                 {/* Header */}
                 <Header />
 
@@ -129,14 +129,14 @@ export default function ChatUI() {
                 {qaPairs.length === 0 && !isLoading && (
                     <div className="text-center py-16 animate-fade-in">
                         <div className="mb-6">
-                            <svg className="w-20 h-20 mx-auto text-purple-400/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-20 h-20 mx-auto text-primary/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
-                        <h3 className="text-xl md:text-2xl font-semibold text-purple-300/80 mb-3">
+                        <h3 className="text-xl md:text-2xl font-semibold text-accent/80 mb-3">
                             เริ่มต้นถามคำถามได้เลย!
                         </h3>
-                        <p className="text-purple-400/60 max-w-md mx-auto">
+                        <p className="text-accent/60 max-w-md mx-auto">
                             AI Assistant พร้อมช่วยตอบคำถามเกี่ยวกับ Digital Marketing, Media Planning, และเรื่องอื่นๆ สำหรับ Junior Digital Planner
                         </p>
                     </div>

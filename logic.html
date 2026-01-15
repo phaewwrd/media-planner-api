@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Planner Assistant - Midnight Enterprise v2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: #050505;
+            color: #f4f4f5;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 450px;
+            margin: auto;
+            height: 350px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #27272a;
+            border-radius: 10px;
+        }
+
+        .option-card {
+            background-color: #0f0f0f;
+            border: 1px solid #27272a;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .option-card:hover {
+            border-color: #a855f7;
+            background-color: #1a1025;
+        }
+
+        .option-card.selected {
+            border-color: #a855f7;
+            background-color: #1a1025;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.15);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.6s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="overflow-x-hidden">
+
+    <!-- Chosen Palette: Deep Slate & Neon Purple (Accenture Midnight Style) -->
+    <!-- Application Structure Plan: Linear Discovery -> Weighted Scoring Engine -> Strategic Dashboard. Designed for High Credibility. -->
+    <!-- Visualization & Content Choices: Donut chart for precise allocation. Context-aware AI feedback. 8-class Matrix implementation. NO SVG used. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <div id="app" class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="w-full bg-[#050505]/90 backdrop-blur-md border-b border-zinc-800 py-5 px-8 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="bg-purple-600 text-white w-12 h-12 rounded-xl flex items-center justify-center font-black text-2xl shadow-[0_0_20px_rgba(168,85,247,0.3)]">
+                        P</div>
+                    <div>
+                        <h1 class="text-base font-extrabold uppercase tracking-widest text-white leading-tight">Media
+                            Planner</h1>
+                        <p class="text-[9px] text-purple-400 font-black uppercase tracking-[0.2em]">Business Logic v2.0
+                            | Ecommerce</p>
+                    </div>
+                </div>
+                <div id="progress-wrapper" class="hidden sm:flex flex-col items-end gap-1.5">
+                    <span id="progress-text"
+                        class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Analysis in Progress:
+                        0%</span>
+                    <div class="w-40 h-1 bg-zinc-800 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-purple-600 transition-all duration-700"
+                            style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="flex-1 flex flex-col items-center justify-center p-6 md:p-12">
+
+            <!-- SECTION: INTRO SCREEN -->
+            <div id="step-start" class="w-full max-w-4xl text-center space-y-12 animate-slide-up">
+                <div class="space-y-6">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-1.5 bg-zinc-900 border border-zinc-800 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></span>
+                        <span class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Conversion
+                            Intelligence Model Activated</span>
+                    </div>
+                    <h2
+                        class="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.85] italic">
+                        Precision <br><span class="text-purple-600">Allocation</span>
+                    </h2>
+                    <p class="text-lg text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed">
+                        วิเคราะห์จัดสรรงบประมาณสื่อด้วยตรรกะระดับ Senior Planner <br>
+                        เพื่อเป้าหมาย <span class="text-white">Ecommerce Conversion</span> ที่วัดผลได้จริง
+                    </p>
+                </div>
+
+                <div
+                    class="bg-[#0f0f0f] p-10 rounded-[3rem] border border-zinc-800 shadow-2xl space-y-8 max-w-xl mx-auto">
+                    <div class="space-y-2 text-left">
+                        <label class="text-[10px] font-black text-zinc-600 uppercase tracking-widest ml-1">Client
+                            Identification</label>
+                        <input type="text" id="client-name" placeholder="ระบุชื่อแบรนด์หรือธุรกิจที่นี่..."
+                            class="w-full bg-transparent border-b border-zinc-800 py-4 text-center text-2xl font-bold text-white focus:border-purple-600 focus:outline-none transition-all">
+                    </div>
+                    <button onclick="startWizard()"
+                        class="w-full py-6 bg-white text-black font-black rounded-2xl hover:bg-purple-600 hover:text-white transition-all active:scale-95 shadow-xl uppercase tracking-[0.2em] text-xs">Initialize
+                        Analysis</button>
+                </div>
+            </div>
+
+            <!-- SECTION: QUESTION WIZARD -->
+            <div id="step-wizard" class="hidden w-full max-w-2xl animate-slide-up">
+                <div class="mb-12">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="w-10 h-[1px] bg-purple-600"></span>
+                        <span id="q-topic"
+                            class="text-[10px] font-black text-purple-500 uppercase tracking-[0.3em]">Strategic
+                            Context</span>
+                    </div>
+                    <h3 id="q-desc"
+                        class="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight italic">
+                        "พฤติกรรมการตัดสินใจซื้อของลูกค้าเป็นแบบไหน?"</h3>
+                </div>
+
+                <div id="options-container" class="grid grid-cols-1 gap-4 mb-10">
+                    <!-- Options injected via JS -->
+                </div>
+
+                <!-- Bot Tooltip -->
+                <div id="bot-feedback"
+                    class="hidden mb-12 p-8 bg-zinc-900/50 border border-purple-500/20 rounded-[2.5rem] flex gap-6 items-center animate-slide-up shadow-inner">
+                    <div
+                        class="w-12 h-12 bg-purple-600 text-white rounded-2xl flex items-center justify-center shrink-0 text-xl shadow-[0_0_15px_rgba(168,85,247,0.3)]">
+                        💡</div>
+                    <p id="bot-feedback-text" class="text-sm text-purple-100 font-medium italic leading-relaxed"></p>
+                </div>
+
+                <div class="flex items-center justify-between pt-8 border-t border-zinc-800">
+                    <button onclick="prevQuestion()" id="btn-back"
+                        class="text-zinc-600 hover:text-white font-black text-[10px] uppercase tracking-[0.2em] flex items-center gap-3 transition-all">
+                        ← Previous
+                    </button>
+                    <div id="q-count" class="text-[10px] font-black text-zinc-800 uppercase tracking-widest">Step 01 /
+                        10</div>
+                    <button onclick="nextQuestion()" id="btn-next" disabled
+                        class="px-14 py-4 bg-zinc-800 text-zinc-600 font-black rounded-xl text-[10px] uppercase tracking-[0.2em] transition-all cursor-not-allowed">Continue</button>
+                </div>
+            </div>
+
+            <!-- SECTION: PROCESSING -->
+            <div id="step-processing" class="hidden w-full max-w-lg text-center space-y-12 animate-slide-up">
+                <div class="flex justify-center">
+                    <div
+                        class="w-36 h-36 bg-zinc-900 border border-zinc-800 rounded-[3.5rem] flex items-center justify-center shadow-2xl relative overflow-hidden">
+                        <div class="absolute inset-0 bg-purple-600/10 animate-pulse"></div>
+                        <span class="text-5xl relative z-10">🧠</span>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <h2 class="text-4xl font-black text-white uppercase tracking-tighter italic">Compiling Data</h2>
+                    <p id="processing-client" class="text-xs font-black text-zinc-600 uppercase tracking-[0.3em]">
+                        Implementing Senior Logic v2.0</p>
+                </div>
+                <div class="max-w-xs mx-auto w-full h-1 bg-zinc-900 rounded-full overflow-hidden">
+                    <div id="processing-bar" class="h-full bg-purple-600 w-0 transition-all duration-[3s]"></div>
+                </div>
+            </div>
+
+            <!-- SECTION: RESULT DASHBOARD -->
+            <div id="step-result" class="hidden w-full max-w-7xl animate-slide-up space-y-12">
+                <!-- Dashboard Header -->
+                <div
+                    class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-10 border-b border-zinc-800 pb-12">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span id="res-class"
+                                class="px-3 py-1 bg-purple-600 text-white text-[10px] font-black rounded uppercase tracking-widest shadow-[0_0_15px_rgba(168,85,247,0.4)]">Class
+                                ID: C4</span>
+                            <span class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_10px_#22c55e]"></span>
+                            <span class="text-[10px] font-black text-zinc-500 uppercase tracking-[0.2em]">Strategy
+                                Optimized</span>
+                        </div>
+                        <div id="res-client"
+                            class="text-sm font-black text-zinc-600 uppercase tracking-[0.3em] italic leading-none">
+                            Client: Test Brand</div>
+                        <h2 id="res-name"
+                            class="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.8] italic">
+                            Efficient Performance</h2>
+                        <div id="res-percentages"
+                            class="text-2xl font-black text-purple-500 uppercase tracking-tight flex gap-6">
+                            <!-- Percentages Injected -->
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <button onclick="location.reload()"
+                            class="px-12 py-5 bg-zinc-900 border border-zinc-800 text-white font-black rounded-2xl hover:bg-zinc-800 transition-all uppercase tracking-widest text-[11px]">New
+                            Planning</button>
+                    </div>
+                </div>
+
+                <!-- Main Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                    <!-- Column 1: Allocation -->
+                    <div
+                        class="lg:col-span-4 bg-[#0f0f0f] p-10 rounded-[3rem] border border-zinc-800 flex flex-col items-center">
+                        <h3 class="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-12">Media budget
+                            allocation</h3>
+                        <div class="chart-container">
+                            <canvas id="allocationChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Column 2: Recommendation -->
+                    <div
+                        class="lg:col-span-4 bg-[#0f0f0f] p-10 rounded-[3rem] border border-zinc-800 flex flex-col min-h-[500px]">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div
+                                class="w-12 h-12 bg-purple-900/50 text-purple-400 rounded-2xl flex items-center justify-center text-xl border border-purple-500/20">
+                                📢</div>
+                            <h3 class="text-xl font-black text-white uppercase tracking-widest italic">Recommendation
+                            </h3>
+                        </div>
+                        <div id="res-script"
+                            class="bg-black/40 p-8 rounded-3xl mb-10 italic text-zinc-300 font-medium leading-relaxed text-base border-l-4 border-purple-600 shadow-inner">
+                            <!-- Script Injected -->
+                        </div>
+                        <h4
+                            class="text-sm font-black text-purple-500 uppercase tracking-[0.3em] mb-4 flex items-center gap-3">
+                            <span>✨</span> AI Director Planner Pro Tips:
+                        </h4>
+                        <div id="res-ai-advice"
+                            class="flex-1 overflow-y-auto custom-scrollbar pr-3 text-[14px] text-zinc-400 font-medium leading-loose whitespace-pre-line">
+                            <!-- AI Content -->
+                        </div>
+                    </div>
+
+                    <!-- Column 3: Next Steps -->
+                    <div
+                        class="lg:col-span-4 bg-[#0f0f0f] p-10 rounded-[3rem] border border-zinc-800 flex flex-col min-h-[500px]">
+                        <div class="flex items-center gap-4 mb-8">
+                            <div
+                                class="w-12 h-12 bg-zinc-800 text-zinc-400 rounded-2xl flex items-center justify-center text-xl">
+                                🎯</div>
+                            <h3 class="text-xl font-black text-white uppercase tracking-widest italic">Next steps</h3>
+                        </div>
+                        <div
+                            class="mb-10 p-8 bg-white text-black rounded-[2.5rem] text-xs font-black leading-relaxed shadow-xl">
+                            <p id="res-insights"></p>
+                        </div>
+                        <div id="res-recs" class="space-y-4 overflow-y-auto custom-scrollbar flex-1">
+                            <!-- Rec List -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="w-full py-10 text-center text-[10px] text-zinc-800 font-black uppercase tracking-[0.5em]">
+            &copy; 2026 Strategy Intelligence Engine &bull; Enterprise Framework
+        </footer>
+    </div>
+
+    <script>
+        // --- DATA & LOGIC V2 ---
+        const QUESTIONS = [
+            {
+                id: 'q1', topic: "Strategic Context", desc: "โดยทั่วไป ลูกค้าซื้อสินค้าหรือบริการนี้แบบไหนมากกว่าครับ?", hint: "Planner Hint: สะท้อนพฤติกรรมการตัดสินใจจริง ไม่ใช่แค่ราคา",
+                options: [
+                    { label: 'ตัดสินใจเร็ว / เห็นแล้วซื้อเลย', val: 'Low', sub: 'Low involvement / FB +3 Points', points: { fb: 3, gg: 0 } },
+                    { label: 'ต้องคิด / เทียบ / อ่านรีวิวก่อน', val: 'High', sub: 'High involvement / GG +3 Points', points: { fb: 0, gg: 3 } }
+                ],
+                feedback: "ข้อนี้จะกำหนดบทบาทของช่องทาง ไม่ได้เปลี่ยนเป้าหมาย Conversion ครับ"
+            },
+            {
+                id: 'q2', topic: "Strategic Context", desc: "ปัจจุบัน ลูกค้ามีการค้นหาสินค้าหรือบริการนี้บน Google อยู่แล้วไหมครับ?", hint: "Search Volume Presence",
+                options: [
+                    { label: 'มีการค้นหาชัดเจนและสม่ำเสมอ', val: 'Yes', sub: 'Existing Demand / GG +2 Points', points: { fb: 0, gg: 2 } },
+                    { label: 'แทบไม่มี / สินค้าใหม่', val: 'No', sub: 'Need Awareness / FB +2 Points', points: { fb: 2, gg: 0 } }
+                ]
+            },
+            {
+                id: 'q3', topic: "Strategic Context", desc: "ลูกค้าของคุณมีแนวโน้ม “ซื้อซ้ำ” มากแค่ไหนครับ?", hint: "LTV / Retention Structure",
+                options: [
+                    { label: 'ซื้อครั้งเดียวจบ / นานๆ ครั้ง', val: 'No', sub: 'One-off Model / GG +1 Point', points: { fb: 0, gg: 1 } },
+                    { label: 'ใช้แล้วต้องซื้อซ้ำเป็นรอบ', val: 'Yes', sub: 'Repeat Purchase / FB +1 Point', points: { fb: 1, gg: 0 } }
+                ],
+                feedback: "ข้อนี้ใช้ประเมินโครงสร้างรายได้ระยะยาว ไม่ได้เปลี่ยนเป้าหมาย Conversion"
+            },
+            {
+                id: 'q4', topic: "Operational Flow", desc: "โดยปกติ ลูกค้าซื้อสินค้าของคุณผ่านช่องทางไหนเป็นหลักครับ?", hint: "Friction Check (TikTok Blocker if B)",
+                options: [
+                    { label: 'ซื้อออนไลน์ได้ทันที จบภายในแชท', val: 'Low', sub: 'Low Friction / FB +1 Point', points: { fb: 1, gg: 0 } },
+                    { label: 'ต้องให้ทีม Follow-up / โทร / เสนอราคา', val: 'High', sub: 'High Friction / GG +1 Point', points: { fb: 0, gg: 1 } }
+                ]
+            },
+            {
+                id: 'q5', topic: "Operational Flow", desc: "ตอนนี้ระบบวัดผลโฆษณา (Pixel / Conversion) พร้อมแค่ไหนครับ?", hint: "Data Health (TikTok Blocker if B)",
+                options: [
+                    { label: 'ติดตั้งครบ วัดผลได้แม่นยำ', val: 'Strong', sub: 'Full Funnel / GG +1 Point', points: { fb: 0, gg: 1 } },
+                    { label: 'ยังไม่ครบ / วัดได้แค่คลิกหรือแชท', val: 'Weak', sub: 'Partial Tracking / FB +1 Point', points: { fb: 1, gg: 0 } }
+                ],
+                feedback: "กรณีนี้ระบบจะเน้นช่องทางที่ควบคุมต้นทุนได้มากที่สุด และจะยังไม่เปิด Test channel"
+            },
+            { id: 'q6', topic: "Content & Resources", desc: "ตอนนี้มี 'วิดีโอแนวตั้ง' ที่พร้อมใช้ยิงโฆษณาไหมครับ?", hint: "Creative Block (TikTok Blocker if B)", options: [{ label: 'มีวิดีโอที่เหมาะกับโซเชียล', val: 'Yes' }, { label: 'ยังไม่มี asset พร้อมใช้', val: 'No' }] },
+            { id: 'q7', topic: "Content & Resources", desc: "งบโฆษณาที่วางไว้ต่อเดือนประมาณเท่าไหร่ครับ?", hint: "Budget Block (TikTok Blocker if < 70k)", options: [{ label: '70,000 บาทขึ้นไป', val: 'High' }, { label: 'ต่ำกว่า 70,000 บาท', val: 'Low' }] },
+            { id: 'q8', topic: "Audience & Strategy", desc: "กลุ่มลูกค้าเป้าหมายหลักคือช่วงอายุไหนครับ?", hint: "Age Blocker (TikTok Blocker if 45+)", options: [{ label: '18–24 (Gen Z)', val: '18-24' }, { label: '25–34', val: '25-34' }, { label: '35–44', val: '35-44' }, { label: '45+', val: '45+' }] },
+            {
+                id: 'q9', topic: "Audience & Strategy", desc: "เป้าหมายหลักของแคมเปญนี้คือแบบไหนครับ?", hint: "Volume vs Quality",
+                options: [
+                    { label: 'เน้นจำนวน Lead / Order (Volume)', val: 'Volume', points: { fb: 1, gg: 0 } },
+                    { label: 'เน้นลูกค้าที่คุณภาพสูง ปิดชัวร์ (Quality)', val: 'Quality', points: { fb: 0, gg: 1 } }
+                ],
+                feedback: "ข้อนี้กำหนดบทบาทของโฆษณาใน funnel ไม่ใช่ตัววัดความคุ้มค่าของ Conversion"
+            },
+            { id: 'q10', topic: "Audience & Strategy", desc: "ที่ผ่านมามีช่องทางที่ชนะ (Winner Channel) ชัดเจนไหมครับ?", hint: "Proof of Concept Context", options: [{ label: 'Facebook คือ Winner', val: 'FACEBOOK' }, { label: 'Google คือ Winner', val: 'GOOGLE' }, { label: 'แบรนด์ใหม่ / ยังไม่เคยทำ', val: 'New' }] }
+        ];
+
+        const MODELS = {
+            C1: { id: "C1", name: "Social Dominance", fb: 70, gg: 20, tt: 10, insights: "สร้างกระแสผ่านวิดีโอสั้นและโซเชียลเป็นหัวหอกเพื่อสร้างความต้องการซื้อแบบทันที", recs: ["รันแคมเปญวิดีโอว่อน TikTok", "ใช้ Broad Targeting บน FB", "ทำ TikTok Spark Ads"], script: "เราเน้นสร้างกระแสบน Facebook และ TikTok เป็นหลักครับ เพราะสินค้าเน้นอารมณ์" },
+            C2: { id: "C2", name: "Stable Social Foundation", fb: 70, gg: 30, tt: 0, insights: "สร้างรากฐานบน Facebook ให้แข็งแรง และใช้ Search เก็บกลุ่ม Intent ตกหล่น", recs: ["ติดตั้ง Conversions API", "ทำ Single Image Ads สวยๆ", "ดัก Search Keyword ชื่อแบรนด์"], script: "เริ่มจากสร้างฐานแฟนบนโซเชียลและใช้ Google Search เก็บงานครับ" },
+            C3: { id: "C3", name: "Customer Loyalty Focus", fb: 75, gg: 25, tt: 0, insights: "เน้นกระตุ้นการซื้อซ้ำจากฐานลูกค้าเดิมผ่าน Retargeting เพราะดาต้าบ่งชี้ว่า LTV สูง", recs: ["ทำ Facebook Catalog Ads", "สร้าง Custom Audience จากเบอร์โทร", "กันงบ Search สำหรับ Brand Key"], script: "แผนนี้เน้นรีดประสิทธิภาพจากลูกค้าเก่าเพื่อผลกำไรที่มั่นคงครับ" },
+            C4: { id: "C4", name: "Efficient Performance", fb: 80, gg: 20, tt: 0, insights: "ทุ่มงบไปจุดที่ทำกำไรสูงสุด (Winning Channel) เพื่อรีด ROAS ให้ถึงขีดสุด", recs: ["ปิด Ad Set ที่ไม่มีกำไรรายวัน", "ใช้คอนเทนต์แก้ Pain Point เจาะจง", "รันแคมเปญ Pmax ควบคู่"], script: "เราจะเทงบไปที่ Facebook 80% เพื่อสเกลออเดอร์ให้ได้มากที่สุดครับ" },
+            C5: { id: "C5", name: "Omnichannel Intent Drive", fb: 30, gg: 60, tt: 10, insights: "ใช้ Google Search ปิดการขายกลุ่มที่มีความต้องการสูง และใช้ TikTok ช่วยโน้มน้าว", recs: ["เน้น Google Shopping Ads", "ทำคลิปรีวิวป้ายยาลง TikTok", "วิเคราะห์ Journey ผ่าน GA4"], script: "ใช้พลังการค้นหาคู่กับการป้ายยาวิดีโอเพื่อปิดยอดขายระดับสูงครับ" },
+            C6: { id: "C6", name: "Search Intent Capture", fb: 30, gg: 70, tt: 0, insights: "ดักจับกลุ่มลูกค้าที่มีความต้องการชัดเจนบน Search เพื่อความปลอดภัยของ CPA", recs: ["เน้น Keyword ซื้อ/ราคา/รีวิว", "ปรับ Landing Page ให้เปรียบเทียบง่าย", "ทำ Remarketing ตอกย้ำ"], script: "แผนนี้ดักคนที่มีความต้องการซื้อชัดเจนอยู่แล้วบน Google เป็นหลักครับ" },
+            C7: { id: "C7", name: "Premium Lead Quality Filter", fb: 25, gg: 75, tt: 0, insights: "มุ่งเน้นกรองคุณภาพผู้ติดต่อระดับพรีเมียมผ่าน Keyword กรองกลุ่มเป้าหมาย", recs: ["ใช้ Bidding Target ROAS", "คัด Negative Keywords ละเอียด", "ทำ Remarketing เฉพาะคนเข้าเว็บ"], script: "เน้นคัดเฉพาะ Lead คุณภาพสูงเพื่อให้ทีมขายปิดงานได้ง่ายและแม่นยำครับ" },
+            C8: { id: "C8", name: "Market Authority Leadership", fb: 20, gg: 80, tt: 0, insights: "ครอบครองพื้นที่การค้นหาในทุกมิติ ยึดอันดับ 1 ในทุก Keyword สำคัญของตลาด", recs: ["รัน Search คลุมคู่แข่งทุกราย", "ใช้ Pmax เก็บตกทุกช่องทาง", "ทำ GDN ตอกย้ำความเป็นเบอร์ 1"], script: "เป้าหมายคือการเป็นที่หนึ่งในใจลูกค้าทุกครั้งที่มีการเสิร์ชหาแบรนด์ครับ" }
+        };
+
+        let currentIdx = 0, answers = {}, clientName = "", chartInstance = null;
+
+        function startWizard() {
+            clientName = document.getElementById('client-name').value || "Unnamed Brand";
+            if (!clientName.trim()) return;
+            document.getElementById('step-start').classList.add('hidden');
+            document.getElementById('step-wizard').classList.remove('hidden');
+            document.getElementById('progress-wrapper').classList.remove('hidden');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = QUESTIONS[currentIdx];
+            document.getElementById('q-topic').innerText = q.topic;
+            document.getElementById('q-desc').innerText = `"${q.desc}"`;
+            document.getElementById('q-count').innerText = `Step ${String(currentIdx + 1).padStart(2, '0')} / 10`;
+            document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / 10) * 100}%`;
+            document.getElementById('progress-text').innerText = `Analysis in Progress: ${((currentIdx + 1) / 10) * 100}%`;
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            q.options.forEach(opt => {
+                const div = document.createElement('div');
+                const isSelected = answers[q.id] === opt.val;
+                div.className = `option-card p-6 rounded-[2rem] flex items-center justify-between ${isSelected ? 'selected' : ''}`;
+                div.onclick = () => selectOption(opt);
+                div.innerHTML = `
+                    <div class="space-y-1">
+                        <p class="font-extrabold text-white uppercase tracking-tight">${opt.label}</p>
+                        <p class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">${opt.sub || ''}</p>
+                    </div>
+                    <div class="w-6 h-6 rounded-full border-2 border-zinc-800 flex items-center justify-center shrink-0">
+                        <div class="w-3 h-3 rounded-full ${isSelected ? 'bg-purple-600 shadow-[0_0_10px_#a855f7]' : 'bg-transparent'}"></div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+
+            const feedbackBox = document.getElementById('bot-feedback');
+            if (answers[q.id] && q.feedback) {
+                feedbackBox.classList.remove('hidden');
+                document.getElementById('bot-feedback-text').innerText = q.feedback;
+            } else { feedbackBox.classList.add('hidden'); }
+
+            document.getElementById('btn-next').disabled = !answers[q.id];
+            document.getElementById('btn-next').className = answers[q.id] ?
+                "px-14 py-4 bg-white text-black font-black rounded-xl text-[10px] uppercase tracking-[0.2em] transition-all" :
+                "px-14 py-4 bg-zinc-800 text-zinc-600 font-black rounded-xl text-[10px] uppercase tracking-[0.2em] transition-all cursor-not-allowed";
+            document.getElementById('btn-back').style.visibility = currentIdx === 0 ? 'hidden' : 'visible';
+        }
+
+        function selectOption(opt) { answers[QUESTIONS[currentIdx].id] = opt.val; renderQuestion(); }
+        function prevQuestion() { if (currentIdx > 0) { currentIdx--; renderQuestion(); } }
+        function nextQuestion() {
+            if (currentIdx < QUESTIONS.length - 1) { currentIdx++; renderQuestion(); }
+            else { processAnalysis(); }
+        }
+
+        function processAnalysis() {
+            document.getElementById('step-wizard').classList.add('hidden');
+            document.getElementById('step-processing').classList.remove('hidden');
+            document.getElementById('processing-client').innerText = `Building Engine for ${clientName}`;
+            setTimeout(() => document.getElementById('processing-bar').style.width = '100%', 100);
+            setTimeout(() => calculateResult(), 3200);
+        }
+
+        function calculateResult() {
+            let fbPoints = 0, ggPoints = 0;
+            QUESTIONS.forEach(q => {
+                const ans = answers[q.id];
+                const opt = q.options?.find(o => o.val === ans);
+                if (opt?.points) { fbPoints += opt.points.fb || 0; ggPoints += opt.points.gg || 0; }
+            });
+
+            const blockerMet = answers.q4 === 'High' || answers.q5 === 'Weak' || answers.q6 === 'No' || answers.q7 === 'Low' || answers.q8 === '45+';
+            const canTT = !blockerMet;
+            const hero = fbPoints >= ggPoints ? 'FACEBOOK' : 'GOOGLE';
+            const heroPoints = hero === 'FACEBOOK' ? fbPoints : ggPoints;
+            const efficiency = Math.round((heroPoints / 9) * 100);
+            const str = efficiency <= 40 ? "MOD" : efficiency <= 70 ? "STR" : "MAX";
+
+            let classId = hero === 'FACEBOOK' ? (canTT ? "C1" : (str === "MOD" ? "C2" : (str === "STR" ? "C3" : "C4"))) : (canTT ? "C5" : (str === "MOD" ? "C6" : (str === "STR" ? "C7" : "C8")));
+            displayResult(MODELS[classId], efficiency);
+        }
+
+        function displayResult(model, efficiency) {
+            document.getElementById('step-processing').classList.add('hidden');
+            document.getElementById('step-result').classList.remove('hidden');
+            document.getElementById('res-class').innerText = `Class ID: ${model.id}`;
+            document.getElementById('res-client').innerText = `Client: ${clientName}`;
+            document.getElementById('res-name').innerText = model.name;
+            document.getElementById('res-script').innerText = `"${model.script}"`;
+            document.getElementById('res-insights').innerText = model.insights;
+
+            document.getElementById('res-percentages').innerHTML = `
+                FB <span class="text-white">${model.fb}%</span> | 
+                GG <span class="text-white">${model.gg}%</span> 
+                ${model.tt > 0 ? `| TT <span class="text-white">${model.tt}%</span>` : ''}
+            `;
+
+            const aiAdvice = `
+                📌 **Strategy Rationale (Explain):**
+                จากการประเมินด้วย Logic v2.0 แบรนด์ของคุณมีความแข็งแกร่งทางยุทธศาสตร์ที่ ${efficiency}% โดยเหมาะสมกับ ${model.fb > model.gg ? 'Facebook' : 'Google'} Hero เป็นหลัก เนื่องจากพฤติกรรมลูกค้าเน้น ${answers.q1 === 'Low' ? 'Impulse Buy' : 'Research-driven'}
+
+                💡 **Strategic Advisor:**
+                1. รันแคมเปญที่มุ่งเน้น ${answers.q4 === 'Low' ? 'Self-checkout Conversion' : 'Qualified Lead Generation'} เพื่อประสิทธิภาพสูงสุด
+                2. ขยายสเกลโดยใช้ Bidding แบบ ${efficiency > 70 ? 'Target ROAS' : 'Maximize Conversions'} เพื่อเร่งการเรียนรู้ของ Algorithm
+                3. พัฒนา Creative ที่ตอบโจทย์ช่วงอายุ Gen ${answers.q8.includes('18') ? 'Z' : 'Millennials/X'}
+
+                ⚠️ **Execution Precautions:**
+                - ${model.fb > 50 ? 'ระวัง Ad Fatigue บน Facebook ชุดโฆษณาเดิมควรเปลี่ยนทุก 10-14 วัน' : 'ระวัง Bidding War บน Google Keyword ที่มีการแข่งขันสูงจน CPC พุ่ง'}
+                - ${answers.q5 === 'Weak' ? 'คำเตือน: ระบบ Tracking ยังไม่สมบูรณ์ การเทงบปริมาณมากอาจสูญเปล่า' : 'หมั่นตรวจสอบ Deduplication ของ Conversion ระหว่าง Pixel และ API'}
+            `;
+            document.getElementById('res-ai-advice').innerHTML = aiAdvice.replace(/\n/g, '<br>');
+
+            const recContainer = document.getElementById('res-recs');
+            recContainer.innerHTML = '';
+            model.recs.forEach((rec, i) => {
+                const div = document.createElement('div');
+                div.className = "p-5 bg-zinc-900 border border-zinc-800 rounded-2xl flex gap-4";
+                div.innerHTML = `
+                    <div class="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center text-[10px] font-black shrink-0">0${i + 1}</div>
+                    <p class="text-[13px] font-bold text-zinc-400">${rec}</p>
+                `;
+                recContainer.appendChild(div);
+            });
+
+            renderChart(model.fb, model.gg, model.tt);
+        }
+
+        function renderChart(fb, gg, tt) {
+            const ctx = document.getElementById('allocationChart').getContext('2d');
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Facebook', 'Google', 'TikTok'],
+                    datasets: [{
+                        data: [fb, gg, tt],
+                        backgroundColor: ['#7c3aed', '#ffffff', '#27272a'],
+                        borderColor: '#050505',
+                        borderWidth: 10
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    cutout: '80%',
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

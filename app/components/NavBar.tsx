@@ -38,7 +38,7 @@ export default function NavBar() {
 
     return (
         <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex items-center justify-between bg-background/80 backdrop-blur-md border-b border-white/5">
-            <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent-purple to-accent-blue hover:opacity-80 transition-opacity">
+            <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent hover:opacity-80 transition-opacity">
                 AI Media Planner
             </Link>
 
@@ -50,7 +50,7 @@ export default function NavBar() {
                         </span>
                         <button
                             onClick={handleLogout}
-                            className="px-4 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors border border-transparent hover:border-white/10"
+                            className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-lg transition-colors border border-transparent hover:border-foreground/10"
                         >
                             Log Out
                         </button>
@@ -59,13 +59,13 @@ export default function NavBar() {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/login"
-                            className="px-4 py-2 text-sm font-medium text-white/80 hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                            className="px-4 py-2 text-sm font-medium text-foreground/80 hover:text-foreground hover:bg-foreground/10 rounded-lg transition-colors"
                         >
                             Log In
                         </Link>
                         <Link
                             href="/register"
-                            className="px-4 py-2 text-sm font-medium bg-accent-purple hover:bg-accent-purple/90 text-white rounded-lg transition-colors shadow-lg shadow-purple-500/20"
+                            className="px-4 py-2 text-sm font-medium bg-primary hover:bg-primary/90 text-foreground rounded-lg transition-colors shadow-lg shadow-primary/20"
                         >
                             Sign Up
                         </Link>

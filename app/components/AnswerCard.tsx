@@ -36,7 +36,7 @@ export default function AnswerCard({ qaPair, index }: AnswerCardProps) {
 
     return (
         <div
-            className="group relative bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm border border-purple-500/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:border-purple-400/50 transition-all duration-300 animate-slide-up"
+            className="group relative bg-gradient-to-br from-primary/20 to-secondary/20 backdrop-blur-sm border border-primary/30 rounded-2xl p-6 shadow-xl hover:shadow-2xl hover:border-primary/50 transition-all duration-300 animate-slide-up"
             style={{ animationDelay: `${index * 100}ms` }}
         >
             {/* Category Tag */}
@@ -48,7 +48,7 @@ export default function AnswerCard({ qaPair, index }: AnswerCardProps) {
                 {/* Copy Button */}
                 <button
                     onClick={handleCopy}
-                    className="text-purple-300/60 hover:text-purple-300 transition-colors duration-200 opacity-0 group-hover:opacity-100"
+                    className="text-accent/60 hover:text-accent transition-colors duration-200 opacity-0 group-hover:opacity-100"
                     title="Copy to clipboard"
                 >
                     {copied ? (
@@ -65,51 +65,51 @@ export default function AnswerCard({ qaPair, index }: AnswerCardProps) {
 
             {/* Question */}
             <div className="mb-4">
-                <h3 className="text-sm font-semibold text-purple-300/70 mb-2">คำถาม:</h3>
-                <p className="text-purple-100 text-lg font-medium">{qaPair.question}</p>
+                <h3 className="text-sm font-semibold text-accent/70 mb-2">คำถาม:</h3>
+                <p className="text-white text-lg font-medium">{qaPair.question}</p>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent mb-4"></div>
+            <div className="h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent mb-4"></div>
 
             {/* Answer */}
             <div className="mb-3">
-                <h3 className="text-sm font-semibold text-blue-300/70 mb-3">คำตอบ:</h3>
-                <div className="text-purple-50/90 leading-relaxed prose prose-invert prose-purple max-w-none">
+                <h3 className="text-sm font-semibold text-secondary/70 mb-3">คำตอบ:</h3>
+                <div className="text-white/90 leading-relaxed prose prose-invert prose-purple max-w-none">
                     {/* Simple markdown rendering - split by paragraphs and handle basic formatting */}
                     {qaPair.answer.split('\n').map((line, idx) => {
                         // Headers
                         if (line.startsWith('### ')) {
-                            return <h3 key={idx} className="text-blue-300 font-semibold text-lg mt-4 mb-2">{line.replace('### ', '')}</h3>;
+                            return <h3 key={idx} className="text-secondary font-semibold text-lg mt-4 mb-2">{line.replace('### ', '')}</h3>;
                         }
                         if (line.startsWith('## ')) {
-                            return <h2 key={idx} className="text-purple-300 font-bold text-xl mt-5 mb-3">{line.replace('## ', '')}</h2>;
+                            return <h2 key={idx} className="text-primary font-bold text-xl mt-5 mb-3">{line.replace('## ', '')}</h2>;
                         }
                         // Bold text (simple pattern)
                         if (line.includes('**')) {
                             const parts = line.split('**');
                             return (
                                 <p key={idx} className="mb-2">
-                                    {parts.map((part, i) => i % 2 === 1 ? <strong key={i} className="text-cyan-300 font-semibold">{part}</strong> : part)}
+                                    {parts.map((part, i) => i % 2 === 1 ? <strong key={i} className="text-accent font-semibold">{part}</strong> : part)}
                                 </p>
                             );
                         }
                         // List items
                         if (line.startsWith('- ') || line.startsWith('✅ ')) {
-                            return <li key={idx} className="ml-4 mb-1 text-purple-100/80">{line.replace(/^- |^✅ /, '')}</li>;
+                            return <li key={idx} className="ml-4 mb-1 text-white/80">{line.replace(/^- |^✅ /, '')}</li>;
                         }
                         // Empty line
                         if (line.trim() === '') {
                             return <div key={idx} className="h-2"></div>;
                         }
                         // Regular paragraph
-                        return <p key={idx} className="mb-2 text-purple-100/80">{line}</p>;
+                        return <p key={idx} className="mb-2 text-white/80">{line}</p>;
                     })}
                 </div>
             </div>
 
             {/* Timestamp */}
-            <div className="text-xs text-purple-400/50 mt-4">
+            <div className="text-xs text-accent/50 mt-4">
                 {qaPair.timestamp.toLocaleString('th-TH', {
                     year: 'numeric',
                     month: 'short',
