@@ -5,6 +5,7 @@ import { AllocationChart } from "./components/AllocationChart";
 import ChatUI from "./components/ChatUI";
 import { Model, QUESTIONS } from "./lib/planner-data";
 import { BrainCircuit } from "lucide-react";
+import { jsPDF } from "jspdf";
 
 type Step = "start" | "wizard" | "processing" | "result";
 type Answers = { [key: string]: string };
@@ -188,6 +189,152 @@ export default function PlannerPage() {
       setError(e.message || 'An unknown error occurred.');
       // Optional: switch to an error view or show a toast
       setCurrentStep("start"); // Go back to start on error for now
+    }
+  };
+
+
+  const exportToPdf = async () => {
+    if (!result) return;
+
+    // Prepare text for summarization API
+    let textForSummarization = `Client Name: ${clientName}\n\n`;
+    textForSummarization += `Media Budget Allocation:\n`;
+    textForSummarization += `  Facebook: ${result.model.fb}%\n`;
+    textForSummarization += `  Google: ${result.model.gg}%\n`;
+    if (result.model.tt > 0) {
+      textForSummarization += `  TikTok: ${result.model.tt}%\n`;
+    }
+    textForSummarization += `\nRecommendation: "${result.model.script}"\n\n`;
+    textForSummarization += `Next Steps: ${result.model.insights}\n\n`;
+    
+    // Add existing AI Analysis
+    const analysis = generateAiAnalysis(result, answers);
+    textForSummarization += "AI Director Planner Pro Tips:\n";
+    Object.entries(analysis).forEach(([category, points]) => {
+      textForSummarization += `  ${category}:\n`;
+      points.forEach(point => {
+        textForSummarization += `    - ${point}\n`;
+      });
+    });
+
+    try {
+      console.log("Text sent to summarization API:", textForSummarization);
+      const response = await fetch('/api/summarize', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: textForSummarization }),
+      });
+
+      if (!response.ok) {
+        const errorBody = await response.text();
+        console.error("Summarization API error response:", response.status, errorBody);
+        throw new Error('Failed to get summary from AI. See console for details.');
+      }
+
+      const { text: summarizedText } = await response.json();
+
+      // Initialize jsPDF
+      const doc = new jsPDF();
+      let yOffset = 10;
+      const lineHeight = 7;
+      const margin = 10;
+      const maxWidth = 190; // A4 width (210mm) - 2 * margin
+
+      // Add Client Name
+      doc.setFontSize(22);
+      doc.text(`Strategic Planning for: ${clientName}`, margin, yOffset);
+      yOffset += lineHeight * 2;
+
+      // Add Media Budget Allocation
+      doc.setFontSize(16);
+      doc.text("Media Budget Allocation", margin, yOffset);
+      yOffset += lineHeight;
+      doc.setFontSize(12);
+      doc.text(`Facebook: ${result.model.fb}%`, margin, yOffset);
+      yOffset += lineHeight;
+      doc.text(`Google: ${result.model.gg}%`, margin, yOffset);
+      yOffset += lineHeight;
+      if (result.model.tt > 0) {
+        doc.text(`TikTok: ${result.model.tt}%`, margin, yOffset);
+        yOffset += lineHeight;
+      }
+      yOffset += lineHeight;
+
+      // Add Recommendation
+      doc.setFontSize(16);
+      doc.text("Recommendation", margin, yOffset);
+      yOffset += lineHeight;
+      doc.setFontSize(12);
+      const recommendationLines = doc.splitTextToSize(`"${result.model.script}"`, maxWidth);
+      doc.text(recommendationLines, margin, yOffset);
+      yOffset += lineHeight * recommendationLines.length;
+      yOffset += lineHeight;
+
+      // Add Next Steps
+      doc.setFontSize(16);
+      doc.text("Next Steps", margin, yOffset);
+      yOffset += lineHeight;
+      doc.setFontSize(12);
+      const insightsLines = doc.splitTextToSize(`${result.model.insights}`, maxWidth);
+      doc.text(insightsLines, margin, yOffset);
+      yOffset += lineHeight * insightsLines.length;
+      yOffset += lineHeight;
+
+      result.model.recs.forEach((rec, i) => {
+        if (yOffset > 280 - lineHeight * 2) { // Check for page break
+          doc.addPage();
+          yOffset = 10;
+        }
+        doc.setFontSize(10);
+        const recLines = doc.splitTextToSize(`0${i + 1}. ${rec}`, maxWidth);
+        doc.text(recLines, margin, yOffset);
+        yOffset += lineHeight * recLines.length;
+      });
+      yOffset += lineHeight;
+
+      // Add AI Director Planner Pro Tips
+      doc.setFontSize(16);
+      doc.text("AI Director Planner Pro Tips:", margin, yOffset);
+      yOffset += lineHeight;
+      doc.setFontSize(12);
+      Object.entries(analysis).forEach(([category, points]) => {
+        if (yOffset > 280 - lineHeight * 2) { // Check for page break
+          doc.addPage();
+          yOffset = 10;
+        }
+        doc.setFontSize(14);
+        doc.text(category, margin, yOffset);
+        yOffset += lineHeight;
+        doc.setFontSize(12);
+        points.forEach(point => {
+          if (yOffset > 280 - lineHeight * 2) { // Check for page break
+            doc.addPage();
+            yOffset = 10;
+          }
+          const pointLines = doc.splitTextToSize(`- ${point}`, maxWidth);
+          doc.text(pointLines, margin, yOffset);
+          yOffset += lineHeight * pointLines.length;
+        });
+        yOffset += lineHeight;
+      });
+      yOffset += lineHeight;
+
+      // Add AI Summary and Analysis
+      doc.setFontSize(18);
+      doc.text("AI Summary and Analysis", margin, yOffset);
+      yOffset += lineHeight * 2;
+      doc.setFontSize(12);
+      const summaryLines = doc.splitTextToSize(summarizedText, maxWidth);
+      doc.text(summaryLines, margin, yOffset);
+      yOffset += lineHeight * summaryLines.length;
+      
+      doc.save(`${clientName}-Strategic-Plan-Summary.pdf`);
+
+    } catch (e: any) {
+      console.error("PDF generation or summarization failed:", e);
+      alert("Failed to generate PDF summary. Please try again.");
     }
   };
 
@@ -417,16 +564,15 @@ export default function PlannerPage() {
                 >
                   New Planning
                 </button>
-                {/* <button
-                  onClick={() => setShowChat(true)}
+                <button
+                  onClick={exportToPdf}
                   className="px-12 py-5 bg-purple-600 text-white font-black rounded-2xl hover:bg-purple-700 transition-all uppercase tracking-widest text-[11px] flex items-center gap-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z" />
-                    <path d="M15 7v2a2 2 0 01-2 2H9.414l-1.414-1.414A2 2 0 015 8V7a2 2 0 012-2h7a2 2 0 012 2z" />
+                    <path fillRule="evenodd" d="M.003 12a1 1 0 001 1h2.586l-.293.293a1 1 0 001.414 1.414l2.5-2.5a1 1 0 000-1.414l-2.5-2.5a1 1 0 00-1.414 1.414l.293.293H1.003a1 1 0 00-1 1zm19.994-2a1 1 0 00-1-1h-2.586l.293-.293a1 1 0 00-1.414-1.414l-2.5 2.5a1 1 0 000 1.414l2.5 2.5a1 1 0 001.414-1.414l-.293-.293h2.586a1 1 0 001-1zM10.003 3a1 1 0 00-1 1v2.586l-.293-.293a1 1 0 00-1.414 1.414l2.5 2.5a1 1 0 001.414 0l2.5-2.5a1 1 0 00-1.414-1.414l-.293.293V4a1 1 0 00-1-1zM10.003 17a1 1 0 00-1 1v2.586l-.293-.293a1 1 0 00-1.414 1.414l2.5 2.5a1 1 0 001.414 0l2.5-2.5a1 1 0 00-1.414-1.414l-.293.293V18a1 1 0 00-1-1z" clipRule="evenodd" />
                   </svg>
-                  Chat with AI
-                </button> */}
+                  Export to PDF
+                </button>
               </div>
             </div>
 
