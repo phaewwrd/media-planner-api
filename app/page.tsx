@@ -311,7 +311,7 @@ export default function PlannerPage() {
                 >
                   <div className="space-y-1">
                     <p className="font-extrabold text-white uppercase tracking-tight">{opt.label}</p>
-                    <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">{opt.sub || ''}</p>
+                    {/* <p className="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">{opt.sub || ''}</p> */}
                   </div>
                   <div className="w-6 h-6 rounded-full border-2 border-zinc-800 flex items-center justify-center shrink-0">
                     <div className={`w-3 h-3 rounded-full ${selectedValue === opt.val ? 'bg-purple-600 shadow-[0_0_10px_#a855f7]' : 'bg-transparent'}`}></div>
@@ -401,7 +401,7 @@ export default function PlannerPage() {
                 <div className="text-sm font-black text-zinc-600 uppercase tracking-[0.3em] italic leading-none">
                   Client: {clientName}
                 </div>
-                <h2 className="text-6xl md:text-8xl font-black text-white tracking-tighter uppercase leading-[0.8] italic">
+                <h2 className="text-6xl md:text-6xl font-black text-white tracking-tighter uppercase leading-[0.8] italic">
                   {result.model.name}
                 </h2>
                 <div className="text-2xl font-black text-purple-500 uppercase tracking-tight flex gap-6">
@@ -465,7 +465,7 @@ export default function PlannerPage() {
                   </div>
                   <h3 className="text-xl font-black text-white uppercase tracking-widest italic">Next steps</h3>
                 </div>
-                <div className="mb-10 p-8 bg-white text-black rounded-[2.5rem] text-xs font-black leading-relaxed shadow-xl">
+                <div className="mb-10 p-8 bg-white text-black rounded-[2.5rem] text-md font-black leading-relaxed shadow-xl">
                   <p>{result.model.insights}</p>
                 </div>
                 <div className="space-y-4 overflow-y-auto custom-scrollbar flex-1">
